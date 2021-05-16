@@ -49,6 +49,18 @@ func (db Database) GetAccountById(accountId int) (models.Account, error) {
 	}
 }
 
+func (db Database) GetAccountBalanceById(accountId int) (float64, error) {
+	balance := 0.0
+	query := `SELECT balance From accounts WHERE id = $1;`
+	row := db.Conn.QueryRow(query, accountId)
+	switch err := row.Scan(&balance); err {
+	case sql.ErrNoRows:
+		return balance, ErrNoMatch
+	default:
+		return balance, err
+	}
+}
+
 func (db Database) DeleteAccount(accountId int) error {
 	query := `DELETE FROM accounts WHERE id = $1;`
 	_, err := db.Conn.Exec(query, accountId)
@@ -62,8 +74,8 @@ func (db Database) DeleteAccount(accountId int) error {
 
 func (db Database) UpdateAccount(accountId int, accountData models.Account) (models.Account, error) {
 	account := models.Account{}
-	query := `UPDATE accounts SET name=$1, cpf=$2, secret=$3, balance=$4 WHERE id=$5 RETURNING id, name, cpf, created_at;`
-	err := db.Conn.QueryRow(query, accountData.Name, accountData.Cpf, accountData.Secret, accountData.Balance, accountId).Scan(&account.Id, &account.Name, &account.Cpf, &account.CreatedAt)
+	query := `UPDATE accounts SET name=$1, cpf=$2, secret=$3, balance=$4 WHERE id=$5 RETURNING id, name, cpf, balance, created_at;`
+	err := db.Conn.QueryRow(query, accountData.Name, accountData.Cpf, accountData.Secret, accountData.Balance, accountId).Scan(&account.Id, &account.Name, &account.Cpf, &account.Balance, &account.CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return account, ErrNoMatch

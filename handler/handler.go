@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
 	"github.com/marimell09/stone-challenge/db"
 )
@@ -13,6 +14,14 @@ var dbInstance db.Database
 func NewHandler(db db.Database) http.Handler {
 	router := chi.NewRouter()
 	dbInstance = db
+
+	router.Use(
+		render.SetContentType(render.ContentTypeJSON), // Set content-Type headers as application/json
+		middleware.Logger,          // Log API request calls
+		middleware.RedirectSlashes, // Redirect slashes to no slash URL versions
+		middleware.Recoverer,       // Recover from panics without crashing server
+	)
+
 	router.MethodNotAllowed(methodNotAllowedHandler)
 	router.NotFound(notFoundHandler)
 	router.Route("/accounts", accounts)
