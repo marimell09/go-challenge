@@ -61,6 +61,18 @@ func (db Database) GetAccountBalanceById(accountId int) (float64, error) {
 	}
 }
 
+func (db Database) GetAccountByCpf(accountCpf string) (string, error) {
+	cpf := ""
+	query := `SELECT secret FROM accounts WHERE cpf = $1;`
+	row := db.Conn.QueryRow(query, accountCpf)
+	switch err := row.Scan(&cpf); err {
+	case sql.ErrNoRows:
+		return cpf, ErrNoMatch
+	default:
+		return cpf, err
+	}
+}
+
 func (db Database) DeleteAccount(accountId int) error {
 	query := `DELETE FROM accounts WHERE id = $1;`
 	_, err := db.Conn.Exec(query, accountId)

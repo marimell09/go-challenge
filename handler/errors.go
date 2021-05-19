@@ -16,6 +16,7 @@ type ErrorResponse struct {
 var (
 	ErrMethodNotAllowed = &ErrorResponse{StatusCode: 405, Message: "Method not allowed"}
 	ErrNotFound         = &ErrorResponse{StatusCode: 404, Message: "Resource not found"}
+	ErrNotAuthorized    = &ErrorResponse{StatusCode: 401, Message: "Not Authorized"}
 	ErrBadRequest       = &ErrorResponse{StatusCode: 400, Message: "Bad request"}
 )
 
