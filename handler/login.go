@@ -14,29 +14,13 @@ import (
 )
 
 var credentials_key = "credentials_key"
-var expiration_time int = 3000
+var expiration_time int = 5
 
-var secret_key string = os.Getenv("TOKEN_SECRET_KEY")
+var secret_key []byte = []byte(os.Getenv("TOKEN_SECRET_KEY"))
 
 func login(router chi.Router) {
 	router.Post("/", loginUser)
-	//router.Use(UserContext)
 }
-
-/* func UserContext(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		credentials := &models.Credentials{}
-
-		if err := render.Bind(r, credentials); err != nil {
-			render.Render(w, r, ErrBadRequest)
-			return
-		}
-
-		ctx := context.WithValue(r.Context(), credentials_key, credentials)
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
-} */
 
 type Claims struct {
 	Cpf string `json:"cpf"`
@@ -54,9 +38,6 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 	secret, err := dbInstance.GetAccountByCpf(credentials.Cpf)
 	var hashedPassword = utils.HashSecret(credentials.Secret)
-
-	//compare := bcrypt.CompareHashAndPassword([]byte(secret), []byte(credentials.Secret))
-	//fmt.Printf("compare: %s\n", compare)
 
 	if err != nil {
 		if err == db.ErrNoMatch {
@@ -82,7 +63,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenString, err := token.SignedString([]byte(secret_key))
+	tokenString, err := token.SignedString(secret_key)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
