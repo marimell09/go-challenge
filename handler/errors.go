@@ -13,11 +13,17 @@ type ErrorResponse struct {
 	Message    string `json:"message"`
 }
 
+const (
+	ErrInvalidAccountDestination = ("Invalid account destination id")
+	ErrInvalidBalance            = ("Balance not sufficient for transaction")
+)
+
 var (
-	ErrMethodNotAllowed = &ErrorResponse{StatusCode: 405, Message: "Method not allowed"}
-	ErrNotFound         = &ErrorResponse{StatusCode: 404, Message: "Resource not found"}
-	ErrNotAuthorized    = &ErrorResponse{StatusCode: 401, Message: "Not Authorized"}
-	ErrBadRequest       = &ErrorResponse{StatusCode: 400, Message: "Bad request"}
+	ErrUnprocessableEntity = &ErrorResponse{StatusCode: 422, Message: "Unprocessable entity"}
+	ErrMethodNotAllowed    = &ErrorResponse{StatusCode: 405, Message: "Method not allowed"}
+	ErrNotFound            = &ErrorResponse{StatusCode: 404, Message: "Resource not found"}
+	ErrNotAuthorized       = &ErrorResponse{StatusCode: 401, Message: "Not Authorized"}
+	ErrBadRequest          = &ErrorResponse{StatusCode: 400, Message: "Bad request"}
 )
 
 func (e *ErrorResponse) Render(w http.ResponseWriter, r *http.Request) error {
@@ -31,6 +37,14 @@ func ErrorRenderer(err error) *ErrorResponse {
 		StatusCode: 400,
 		StatusText: "Bad request",
 		Message:    err.Error(),
+	}
+}
+
+func ErrorUnprocessable(message string) *ErrorResponse {
+	return &ErrorResponse{
+		StatusCode: 422,
+		StatusText: "Unprocessable entity",
+		Message:    message,
 	}
 }
 

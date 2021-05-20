@@ -6,8 +6,9 @@ import (
 )
 
 type Credentials struct {
-	Cpf    string `json:"cpf"`
-	Secret string `json:"secret"`
+	Cpf        string `json:"cpf"`
+	Secret     string `json:"secret"`
+	Account_id string `json:"account_id"`
 }
 
 func (c *Credentials) Bind(r *http.Request) error {

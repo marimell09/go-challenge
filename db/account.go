@@ -61,15 +61,16 @@ func (db Database) GetAccountBalanceById(accountId int) (float64, error) {
 	}
 }
 
-func (db Database) GetAccountByCpf(accountCpf string) (string, error) {
+func (db Database) GetAccountByCpf(accountCpf string) (int, string, error) {
+	id := 0
 	cpf := ""
-	query := `SELECT secret FROM accounts WHERE cpf = $1;`
+	query := `SELECT id, secret FROM accounts WHERE cpf = $1;`
 	row := db.Conn.QueryRow(query, accountCpf)
-	switch err := row.Scan(&cpf); err {
+	switch err := row.Scan(&id, &cpf); err {
 	case sql.ErrNoRows:
-		return cpf, ErrNoMatch
+		return id, cpf, ErrNoMatch
 	default:
-		return cpf, err
+		return id, cpf, err
 	}
 }
 
@@ -82,6 +83,19 @@ func (db Database) DeleteAccount(accountId int) error {
 	default:
 		return err
 	}
+}
+
+func (db Database) UpdateAccountBalance(account_id int, balance float64) error {
+	id := 0
+	query := `UPDATE accounts SET balance=$1 WHERE id=$2 RETURNING id;`
+	err := db.Conn.QueryRow(query, balance, account_id).Scan(&id)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return ErrNoMatch
+		}
+		return err
+	}
+	return nil
 }
 
 func (db Database) UpdateAccount(accountId int, accountData models.Account) (models.Account, error) {

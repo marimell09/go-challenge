@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -23,7 +24,8 @@ func login(router chi.Router) {
 }
 
 type Claims struct {
-	Cpf string `json:"cpf"`
+	Cpf        string `json:"cpf"`
+	Account_id string `json:"account_id"`
 	jwt.StandardClaims
 }
 
@@ -36,7 +38,7 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	secret, err := dbInstance.GetAccountByCpf(credentials.Cpf)
+	id, secret, err := dbInstance.GetAccountByCpf(credentials.Cpf)
 	var hashedPassword = utils.HashSecret(credentials.Secret)
 
 	if err != nil {
@@ -55,7 +57,8 @@ func loginUser(w http.ResponseWriter, r *http.Request) {
 	expirationTime := time.Now().Add(time.Duration(expiration_time) * time.Minute)
 
 	claims := &Claims{
-		Cpf: credentials.Cpf,
+		Cpf:        credentials.Cpf,
+		Account_id: strconv.Itoa(id),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Unix(),
 		},
