@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS accounts(
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     cpf VARCHAR(11) NOT NULL,
-    [secret] VARCHAR(100),
+    secret VARCHAR(100),
     balance NUMERIC(10, 2),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
