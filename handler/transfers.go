@@ -18,6 +18,7 @@ func transfers(router chi.Router) {
 	router.Post("/", addTransfer)
 }
 
+//Check token inside cookie, registering the account origin id in the context
 func CheckToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		c, err := r.Cookie("token")
@@ -56,13 +57,14 @@ func CheckToken(next http.Handler) http.Handler {
 			render.Render(w, r, ErrorRenderer(fmt.Errorf("Invalid account Id")))
 		}
 
-		ctx := context.WithValue(r.Context(), accountIdKey, id)
+		ctx := context.WithValue(r.Context(), account_id_key, id)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
+//Get all transer for logged user
 func getAllTransfers(w http.ResponseWriter, r *http.Request) {
-	account_id := r.Context().Value(accountIdKey).(int)
+	account_id := r.Context().Value(account_id_key).(int)
 	transfers, err := dbInstance.GetAllTransfers(account_id)
 
 	if err != nil {
@@ -76,9 +78,10 @@ func getAllTransfers(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Add new transfer for logged user
 func addTransfer(w http.ResponseWriter, r *http.Request) {
 	transfer := &models.Transfer{}
-	account_id := r.Context().Value(accountIdKey).(int)
+	account_id := r.Context().Value(account_id_key).(int)
 
 	if err := render.Bind(r, transfer); err != nil {
 		render.Render(w, r, ErrBadRequest)

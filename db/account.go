@@ -6,6 +6,7 @@ import (
 	"github.com/marimell09/stone-challenge/models"
 )
 
+//Get all accounts registered
 func (db Database) GetAllAccounts() (*models.AccountList, error) {
 	list := &models.AccountList{}
 	rows, err := db.Conn.Query("SELECT * FROM accounts ORDER BY id DESC")
@@ -14,7 +15,7 @@ func (db Database) GetAllAccounts() (*models.AccountList, error) {
 	}
 	for rows.Next() {
 		var account models.Account
-		err := rows.Scan(&account.Id, &account.Name, &account.Cpf, &account.Secret, &account.Balance, &account.CreatedAt)
+		err := rows.Scan(&account.Id, &account.Name, &account.Cpf, &account.Secret, &account.Balance, &account.Created_at)
 		if err != nil {
 			return list, err
 		}
@@ -23,25 +24,27 @@ func (db Database) GetAllAccounts() (*models.AccountList, error) {
 	return list, nil
 }
 
+//Add new account
 func (db Database) AddAccount(account *models.Account) error {
 	var id int
-	var createdAt string
+	var created_at string
 	query := `INSERT INTO accounts (name, cpf, secret, balance) VALUES ($1, $2, $3, $4) RETURNING id, created_at`
-	err := db.Conn.QueryRow(query, account.Name, account.Cpf, account.Secret, account.Balance).Scan(&id, &createdAt)
+	err := db.Conn.QueryRow(query, account.Name, account.Cpf, account.Secret, account.Balance).Scan(&id, &created_at)
 	if err != nil {
 		return err
 	}
 
 	account.Id = id
-	account.CreatedAt = createdAt
+	account.Created_at = created_at
 	return nil
 }
 
-func (db Database) GetAccountById(accountId int) (models.Account, error) {
+//Get account based on the given account id
+func (db Database) GetAccountById(account_id int) (models.Account, error) {
 	account := models.Account{}
 	query := `SELECT * FROM accounts WHERE id = $1;`
-	row := db.Conn.QueryRow(query, accountId)
-	switch err := row.Scan(&account.Id, &account.Name, &account.Cpf, &account.Secret, &account.Balance, &account.CreatedAt); err {
+	row := db.Conn.QueryRow(query, account_id)
+	switch err := row.Scan(&account.Id, &account.Name, &account.Cpf, &account.Secret, &account.Balance, &account.Created_at); err {
 	case sql.ErrNoRows:
 		return account, ErrNoMatch
 	default:
@@ -49,10 +52,11 @@ func (db Database) GetAccountById(accountId int) (models.Account, error) {
 	}
 }
 
-func (db Database) GetAccountBalanceById(accountId int) (float64, error) {
+//Get account balance based on the given account id
+func (db Database) GetAccountBalanceById(account_id int) (float64, error) {
 	balance := 0.0
 	query := `SELECT balance From accounts WHERE id = $1;`
-	row := db.Conn.QueryRow(query, accountId)
+	row := db.Conn.QueryRow(query, account_id)
 	switch err := row.Scan(&balance); err {
 	case sql.ErrNoRows:
 		return balance, ErrNoMatch
@@ -61,11 +65,12 @@ func (db Database) GetAccountBalanceById(accountId int) (float64, error) {
 	}
 }
 
-func (db Database) GetAccountByCpf(accountCpf string) (int, string, error) {
+//Get account by given account cpf
+func (db Database) GetAccountByCpf(account_cpf string) (int, string, error) {
 	id := 0
 	cpf := ""
 	query := `SELECT id, secret FROM accounts WHERE cpf = $1;`
-	row := db.Conn.QueryRow(query, accountCpf)
+	row := db.Conn.QueryRow(query, account_cpf)
 	switch err := row.Scan(&id, &cpf); err {
 	case sql.ErrNoRows:
 		return id, cpf, ErrNoMatch
@@ -74,9 +79,10 @@ func (db Database) GetAccountByCpf(accountCpf string) (int, string, error) {
 	}
 }
 
-func (db Database) DeleteAccount(accountId int) error {
+//Delete account based on the given account id
+func (db Database) DeleteAccount(account_id int) error {
 	query := `DELETE FROM accounts WHERE id = $1;`
-	_, err := db.Conn.Exec(query, accountId)
+	_, err := db.Conn.Exec(query, account_id)
 	switch err {
 	case sql.ErrNoRows:
 		return ErrNoMatch
@@ -85,6 +91,7 @@ func (db Database) DeleteAccount(accountId int) error {
 	}
 }
 
+//Update account balance for the given account id
 func (db Database) UpdateAccountBalance(account_id int, balance float64) error {
 	id := 0
 	query := `UPDATE accounts SET balance=$1 WHERE id=$2 RETURNING id;`
@@ -98,10 +105,11 @@ func (db Database) UpdateAccountBalance(account_id int, balance float64) error {
 	return nil
 }
 
-func (db Database) UpdateAccount(accountId int, accountData models.Account) (models.Account, error) {
+//Update account information for the given account id
+func (db Database) UpdateAccount(account_id int, account_data models.Account) (models.Account, error) {
 	account := models.Account{}
 	query := `UPDATE accounts SET name=$1, cpf=$2, secret=$3, balance=$4 WHERE id=$5 RETURNING id, name, cpf, balance, created_at;`
-	err := db.Conn.QueryRow(query, accountData.Name, accountData.Cpf, accountData.Secret, accountData.Balance, accountId).Scan(&account.Id, &account.Name, &account.Cpf, &account.Balance, &account.CreatedAt)
+	err := db.Conn.QueryRow(query, account_data.Name, account_data.Cpf, account_data.Secret, account_data.Balance, account_id).Scan(&account.Id, &account.Name, &account.Cpf, &account.Balance, &account.Created_at)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return account, ErrNoMatch

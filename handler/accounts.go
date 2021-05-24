@@ -2,8 +2,6 @@ package handler
 
 import (
 	"context"
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -12,9 +10,10 @@ import (
 	"github.com/go-chi/render"
 	"github.com/marimell09/stone-challenge/db"
 	"github.com/marimell09/stone-challenge/models"
+	"github.com/marimell09/stone-challenge/utils"
 )
 
-var accountIdKey = "accountId"
+var account_id_key = "accountId"
 
 func accounts(router chi.Router) {
 	router.Get("/", getAllAccounts)
@@ -28,24 +27,26 @@ func accounts(router chi.Router) {
 	})
 }
 
+//Account context responsible to save the account id
 func AccountContext(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		accountId := chi.URLParam(r, "accountId")
-		if accountId == "" {
+		account_id := chi.URLParam(r, "accountId")
+		if account_id == "" {
 			render.Render(w, r, ErrorRenderer(fmt.Errorf("Account Id is required")))
 			return
 		}
 
-		id, err := strconv.Atoi(accountId)
+		id, err := strconv.Atoi(account_id)
 		if err != nil {
 			render.Render(w, r, ErrorRenderer(fmt.Errorf("Invalid Account Id")))
 		}
 
-		ctx := context.WithValue(r.Context(), accountIdKey, id)
+		ctx := context.WithValue(r.Context(), account_id_key, id)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
+//Create account, registering the secret in hash format
 func createAccount(w http.ResponseWriter, r *http.Request) {
 	account := &models.Account{}
 
@@ -54,7 +55,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	account.Secret = hashSecret(account.Secret)
+	account.Secret = utils.HashSecret(account.Secret)
 
 	if err := dbInstance.AddAccount(account); err != nil {
 		render.Render(w, r, ErrorRenderer(err))
@@ -67,6 +68,7 @@ func createAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Get all accounts
 func getAllAccounts(w http.ResponseWriter, r *http.Request) {
 	accounts, err := dbInstance.GetAllAccounts()
 	if err != nil {
@@ -78,9 +80,10 @@ func getAllAccounts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Get account for the specified account id in context
 func getAccount(w http.ResponseWriter, r *http.Request) {
-	accountId := r.Context().Value(accountIdKey).(int)
-	account, err := dbInstance.GetAccountById(accountId)
+	account_id := r.Context().Value(account_id_key).(int)
+	account, err := dbInstance.GetAccountById(account_id)
 	if err != nil {
 		if err == db.ErrNoMatch {
 			render.Render(w, r, ErrNotFound)
@@ -95,9 +98,10 @@ func getAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Delete account based on the given account id in context
 func deleteAccount(w http.ResponseWriter, r *http.Request) {
-	accountId := r.Context().Value(accountIdKey).(int)
-	err := dbInstance.DeleteAccount(accountId)
+	account_id := r.Context().Value(account_id_key).(int)
+	err := dbInstance.DeleteAccount(account_id)
 	if err != nil {
 		if err == db.ErrNoMatch {
 			render.Render(w, r, ErrNotFound)
@@ -108,18 +112,19 @@ func deleteAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Update account information, generating new secret in hash
 func updateAccount(w http.ResponseWriter, r *http.Request) {
-	accountId := r.Context().Value(accountIdKey).(int)
-	accountData := models.Account{}
+	account_id := r.Context().Value(account_id_key).(int)
+	account_data := models.Account{}
 
-	if err := render.Bind(r, &accountData); err != nil {
+	if err := render.Bind(r, &account_data); err != nil {
 		render.Render(w, r, ErrBadRequest)
 		return
 	}
 
-	accountData.Secret = hashSecret(accountData.Secret)
+	account_data.Secret = utils.HashSecret(account_data.Secret)
 
-	account, err := dbInstance.UpdateAccount(accountId, accountData)
+	account, err := dbInstance.UpdateAccount(account_id, account_data)
 	if err != nil {
 		if err == db.ErrNoMatch {
 			render.Render(w, r, ErrNotFound)
@@ -135,9 +140,10 @@ func updateAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Get account balance for the given account id in context
 func getAccountBalance(w http.ResponseWriter, r *http.Request) {
-	accountId := r.Context().Value(accountIdKey).(int)
-	balance, err := dbInstance.GetAccountBalanceById(accountId)
+	account_id := r.Context().Value(account_id_key).(int)
+	balance, err := dbInstance.GetAccountBalanceById(account_id)
 
 	res := struct {
 		Balance float64 `json:"balance"`
@@ -153,9 +159,4 @@ func getAccountBalance(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.JSON(w, r, res)
-}
-
-func hashSecret(secret string) string {
-	h := sha256.Sum256([]byte(secret))
-	return base64.StdEncoding.EncodeToString(h[:])
 }

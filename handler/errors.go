@@ -13,9 +13,10 @@ type ErrorResponse struct {
 	Message    string `json:"message"`
 }
 
+//Custom designed errors
 const (
-	ErrInvalidAccountDestination = ("Invalid account destination id")
-	ErrInvalidBalance            = ("Balance not sufficient for transaction")
+	ErrInvalidAccountDestination = "Invalid account destination id"
+	ErrInvalidBalance            = "Balance not sufficient for transaction"
 )
 
 var (
@@ -26,11 +27,13 @@ var (
 	ErrBadRequest          = &ErrorResponse{StatusCode: 400, Message: "Bad request"}
 )
 
+//Render the error
 func (e *ErrorResponse) Render(w http.ResponseWriter, r *http.Request) error {
 	render.Status(r, e.StatusCode)
 	return nil
 }
 
+//Error renderer
 func ErrorRenderer(err error) *ErrorResponse {
 	return &ErrorResponse{
 		Err:        err,
@@ -40,6 +43,7 @@ func ErrorRenderer(err error) *ErrorResponse {
 	}
 }
 
+//Error for unprocessable entity
 func ErrorUnprocessable(message string) *ErrorResponse {
 	return &ErrorResponse{
 		StatusCode: 422,
@@ -48,6 +52,7 @@ func ErrorUnprocessable(message string) *ErrorResponse {
 	}
 }
 
+//Server error renderer
 func ServerErrorRenderer(err error) *ErrorResponse {
 	return &ErrorResponse{
 		Err:        err,

@@ -11,6 +11,7 @@ import (
 
 var dbInstance db.Database
 
+//New handler function
 func NewHandler(db db.Database) http.Handler {
 	router := chi.NewRouter()
 	dbInstance = db

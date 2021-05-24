@@ -17,4 +17,5 @@ require (
 	github.com/sosedoff/pgweb v0.11.7 // indirect
 	github.com/tuvistavie/securerandom v0.0.0-20140719024926-15512123a948 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
+	golang.org/x/tools v0.1.1 // indirect
 )

@@ -23,12 +23,14 @@ func login(router chi.Router) {
 	router.Post("/", loginUser)
 }
 
+//Claim structure to define the token paload
 type Claims struct {
 	Cpf        string `json:"cpf"`
 	Account_id string `json:"account_id"`
 	jwt.StandardClaims
 }
 
+//Login user, checking secret registered and generating a token
 func loginUser(w http.ResponseWriter, r *http.Request) {
 
 	credentials := &models.Credentials{}

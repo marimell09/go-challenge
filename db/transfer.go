@@ -4,6 +4,7 @@ import (
 	"github.com/marimell09/stone-challenge/models"
 )
 
+//Get all transfers for the given account id
 func (db Database) GetAllTransfers(account_id int) (*models.TransferList, error) {
 	list := &models.TransferList{}
 	rows, err := db.Conn.Query("SELECT * FROM transfers WHERE account_origin_id = $1 ORDER BY id DESC", account_id)
@@ -24,6 +25,7 @@ func (db Database) GetAllTransfers(account_id int) (*models.TransferList, error)
 	return list, nil
 }
 
+//Add new transfer
 func (db Database) AddTransfer(transfer *models.Transfer) error {
 	var id int
 	var created_at string
