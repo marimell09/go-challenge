@@ -7,8 +7,23 @@ import (
 
 //Credentials structure for manipulation
 type Credentials struct {
-	Cpf        string `json:"cpf"`
-	Secret     string `json:"secret"`
+	// the cpf for login
+	//
+	// required: true
+	// example: 9999999999
+	Cpf string `json:"cpf"`
+
+	// the secret for login
+	//
+	// requires: true
+	// example: senha
+
+	Secret string `json:"secret"`
+
+	// the account id related to the cpf
+	//
+	// read-only: true
+	// example: senha
 	Account_id string `json:"account_id"`
 }
 

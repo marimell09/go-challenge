@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/marimell09/stone-challenge/db"
+	_ "github.com/marimell09/stone-challenge/docs"
 	"github.com/marimell09/stone-challenge/handler"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"

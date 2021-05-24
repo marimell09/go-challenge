@@ -1,0 +1,145 @@
+basePath: /
+consumes:
+- application/json
+definitions:
+  Account:
+    description: Account structure, used to manipulate accounts
+    properties:
+      balance:
+        description: the account balance
+        example: 150.5
+        format: double
+        type: number
+        x-go-name: Balance
+      cpf:
+        description: the user cpf
+        example: "99999999999"
+        type: string
+        x-go-name: Cpf
+      created_at:
+        description: the account creation date
+        example: "2021-05-24T03:30:26.021292Z"
+        readOnly: true
+        type: string
+        x-go-name: Created_at
+      id:
+        description: the id for this account
+        example: 1
+        format: int64
+        readOnly: true
+        type: integer
+        x-go-name: Id
+      name:
+        description: the user name
+        example: Mariana
+        type: string
+        x-go-name: Name
+      secret:
+        description: the user secret
+        example: senha
+        type: string
+        x-go-name: Secret
+    required:
+    - name
+    - cpf
+    - secret
+    - balance
+    type: object
+    x-go-package: github.com/marimell09/stone-challenge/models
+  AccountList:
+    description: Account list
+    properties:
+      accounts:
+        items:
+          $ref: '#/definitions/Account'
+        type: array
+        x-go-name: Accounts
+    type: object
+    x-go-package: github.com/marimell09/stone-challenge/models
+host: localhost:8080
+info:
+  description: Documentation of our stone-challenge API.
+  title: stone-challenge.
+  version: 1.0.0
+paths:
+  /accounts:
+    get:
+      operationId: getAccounts
+      responses:
+        "200":
+          $ref: '#/responses/getAccountsResponse'
+      summary: Get all accounts.
+      tags:
+      - account
+    post:
+      operationId: addAccount
+      parameters:
+      - description: Account body for new account creation
+        in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/Account'
+      responses:
+        "200":
+          $ref: '#/responses/accountResponse'
+      summary: Create a new account.
+      tags:
+      - account
+  /accounts/{accountId}:
+    get:
+      operationId: getAccount
+      parameters:
+      - description: Account id for search
+        format: int64
+        in: path
+        name: accountId
+        required: true
+        type: integer
+        x-go-name: AccountId
+      responses:
+        "200":
+          $ref: '#/responses/accountResponse'
+      summary: Get account by id.
+      tags:
+      - account
+  /accounts/{accountId}/balance:
+    get:
+      operationId: getAccountBalance
+      parameters:
+      - description: Account id for search
+        format: int64
+        in: path
+        name: accountId
+        required: true
+        type: integer
+        x-go-name: AccountId
+      responses:
+        "200":
+          $ref: '#/responses/getAccountBalanceResponse'
+      summary: Get account balance by id.
+      tags:
+      - account
+produces:
+- application/json
+responses:
+  accountResponse:
+    description: Account creation reponse body
+    schema:
+      $ref: '#/definitions/Account'
+  getAccountBalanceResponse:
+    description: Get account balance reponse body
+    schema:
+      properties:
+        balance:
+          example: 10.6
+          format: double
+          type: number
+          x-go-name: Balance
+      type: object
+  getAccountsResponse:
+    description: Get Accounts reponse body
+    schema:
+      $ref: '#/definitions/AccountList'
+schemes:
+- http
+swagger: "2.0"

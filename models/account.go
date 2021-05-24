@@ -6,13 +6,44 @@ import (
 )
 
 //Account structure, used to manipulate accounts
+// swagger:model
 type Account struct {
-	Id         int     `json:"id"`
-	Name       string  `json:"name"`
-	Cpf        string  `json:"cpf"`
-	Secret     string  `json:"secret"`
-	Balance    float64 `json:"balance"`
-	Created_at string  `json:"created_at"`
+	// the id for this account
+	//
+	// read-only: true
+	// in:query
+	// example: 1
+	Id int `json:"id"`
+
+	// the user name
+	//
+	// required: true
+	// example: Mariana
+	Name string `json:"name"`
+
+	// the user cpf
+	//
+	// required: true
+	// example: 99999999999
+	Cpf string `json:"cpf"`
+
+	// the user secret
+	//
+	// required: true
+	// example: senha
+	Secret string `json:"secret"`
+
+	// the account balance
+	//
+	// required: true
+	// example: 150.50
+	Balance float64 `json:"balance"`
+
+	// the account creation date
+	//
+	// read-only: true
+	// example: 2021-05-24T03:30:26.021292Z
+	Created_at string `json:"created_at"`
 }
 
 //Account list

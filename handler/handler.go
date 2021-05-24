@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 	"github.com/marimell09/stone-challenge/db"
 )
@@ -22,6 +23,15 @@ func NewHandler(db db.Database) http.Handler {
 		middleware.RedirectSlashes, // Redirect slashes to no slash URL versions
 		middleware.Recoverer,       // Recover from panics without crashing server
 	)
+
+	router.Use(cors.Handler(cors.Options{
+		AllowedOrigins:   []string{"https://*", "http://*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: false,
+		MaxAge:           300,
+	}))
 
 	router.MethodNotAllowed(methodNotAllowedHandler)
 	router.NotFound(notFoundHandler)
