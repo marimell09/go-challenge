@@ -46,7 +46,6 @@ Para criar uma documentação atualizada do projeto, rode em administador:
 
 > make swagger
 
-
 Para rodar o servidor exclusivo do swagger e ver a documentação das requisições:
 
 > make serve-swagger
@@ -56,6 +55,7 @@ Também está disponível uma collection pública no postman:
 
 [Postman Collection] (https://www.getpostman.com/collections/c7bcc0395f386133692b)
 
+Obs: O swagger 2.0 não suporta token por cookie, portanto as rotas de transferências foram colocadas apenas a nível de documentação. Caso queiram utilizar as rotas de transferência, utilizem o Postman collection acima, já que este suporta cookies.
 
 ### TODO
 
