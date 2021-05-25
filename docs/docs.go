@@ -13,9 +13,6 @@
 //     Produces:
 //     - application/json
 //
-//     Security:
-//     -
-//
 //
 // swagger:meta
 package docs
