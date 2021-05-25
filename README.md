@@ -30,11 +30,32 @@ Para subir a aplicação, basta clonar o repositório e rodar o comando de build
 
 > docker-compose up --build
 
+Ou rodar em modo administrador:
+
+> make docker-up
+
 A aplicação foi configurada para criar a base de dados utilizando Postgre e realizar as migrações de dados necessárias para subir corretamente.
 Como o compose tenta subir as aplicações ao mesmo tempo, a migração e o servidor restartam caso ocorra algum erro na conexão com a base de dados.
 O servidor e o banco ficam em pé até que a docker seja desligada.
 
+
+# API Doc
+Para a documentação da API foi utilizado o Swagger.
+
+Para criar uma documentação atualizada do projeto, rode em administador:
+
+> make swagger
+
+
+Para rodar o servidor exclusivo do swagger e ver a documentação das requisições:
+
+> make serve-swagger
+
+
+Também está disponível uma collection pública no postman:
+
 [Postman Collection] (https://www.getpostman.com/collections/c7bcc0395f386133692b)
+
 
 ### TODO
 
@@ -43,4 +64,3 @@ O servidor e o banco ficam em pé até que a docker seja desligada.
 - Refatoração de erros
 - Melhorias de encapsulamento
 - Melhorias no docker compose para não expor dados do banco
-- Configurar Swagger para rotas existentes
