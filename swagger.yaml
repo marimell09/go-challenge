@@ -56,6 +56,82 @@ definitions:
         x-go-name: Accounts
     type: object
     x-go-package: github.com/marimell09/stone-challenge/models
+  Credentials:
+    description: Credentials structure for manipulation
+    properties:
+      account_id:
+        description: the account id related to the cpf
+        example: "1"
+        readOnly: true
+        type: string
+        x-go-name: Account_id
+      cpf:
+        description: the cpf for login
+        example: "99999999999"
+        type: string
+        x-go-name: Cpf
+      secret:
+        description: |-
+          the secret for login
+
+          requires: true
+        example: senha
+        type: string
+        x-go-name: Secret
+    required:
+    - cpf
+    type: object
+    x-go-package: github.com/marimell09/stone-challenge/models
+  Transfer:
+    description: Transfer structure for transfer manipulations
+    properties:
+      account_destination_id:
+        description: the trasnfer destination id
+        example: 2
+        format: int64
+        type: integer
+        x-go-name: Account_destination_id
+      account_origin_id:
+        description: the trasnfer origin id
+        example: 1
+        format: int64
+        readOnly: true
+        type: integer
+        x-go-name: Account_origin_id
+      amount:
+        description: the transer amount
+        example: 10.2
+        format: double
+        type: number
+        x-go-name: Amount
+      created_at:
+        description: the account creation date
+        example: "2021-05-24T03:30:26.021292Z"
+        readOnly: true
+        type: string
+        x-go-name: Created_at
+      id:
+        description: the transfer id
+        example: 1
+        format: int64
+        readOnly: true
+        type: integer
+        x-go-name: Id
+    required:
+    - account_destination_id
+    - amount
+    type: object
+    x-go-package: github.com/marimell09/stone-challenge/models
+  TransferList:
+    description: Transfer list
+    properties:
+      transfers:
+        items:
+          $ref: '#/definitions/Transfer'
+        type: array
+        x-go-name: Transfers
+    type: object
+    x-go-package: github.com/marimell09/stone-challenge/models
 host: localhost:8080
 info:
   description: Documentation of our stone-challenge API.
@@ -85,40 +161,78 @@ paths:
       summary: Create a new account.
       tags:
       - account
-  /accounts/{accountId}:
+  /accounts/{account_id}:
     get:
       operationId: getAccount
       parameters:
       - description: Account id for search
         format: int64
         in: path
-        name: accountId
+        name: account_id
         required: true
         type: integer
-        x-go-name: AccountId
+        x-go-name: Account_id
       responses:
         "200":
           $ref: '#/responses/accountResponse'
       summary: Get account by id.
       tags:
       - account
-  /accounts/{accountId}/balance:
+  /accounts/{account_id}/balance:
     get:
       operationId: getAccountBalance
       parameters:
       - description: Account id for search
         format: int64
         in: path
-        name: accountId
+        name: account_id
         required: true
         type: integer
-        x-go-name: AccountId
+        x-go-name: Account_id
       responses:
         "200":
           $ref: '#/responses/getAccountBalanceResponse'
       summary: Get account balance by id.
       tags:
       - account
+  /login:
+    post:
+      operationId: postLogin
+      parameters:
+      - description: Credential body for user login
+        in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/Credentials'
+      responses:
+        "200":
+          $ref: '#/responses/loginResponse'
+      summary: Login with user information.
+      tags:
+      - login
+  /transfers:
+    get:
+      operationId: getTransfers
+      responses:
+        "200":
+          $ref: '#/responses/getTransfersResponse'
+      summary: Get all transfer for the logged user.
+      tags:
+      - transfer
+    post:
+      operationId: addTransfer
+      parameters:
+      - description: Account body for new transfer creation
+        in: body
+        name: Body
+        schema:
+          $ref: '#/definitions/Transfer'
+      responses:
+        "200":
+          $ref: '#/responses/transferResponse'
+      summary: Create a new transfer for the logged user.
+      tags:
+      - transfer
 produces:
 - application/json
 responses:
@@ -140,6 +254,25 @@ responses:
     description: Get Accounts reponse body
     schema:
       $ref: '#/definitions/AccountList'
+  getTransfersResponse:
+    description: Get Transfer reponse body
+    schema:
+      $ref: '#/definitions/TransferList'
+  loginResponse:
+    description: Credential reponse body
+    schema:
+      $ref: '#/definitions/Credentials'
+  transferResponse:
+    description: Transfer creation reponse body
+    schema:
+      $ref: '#/definitions/Transfer'
 schemes:
 - http
+security:
+- api_key: []
+securityDefinitions:
+  api_key:
+    in: header
+    name: Set-Cookie
+    type: apiKey
 swagger: "2.0"

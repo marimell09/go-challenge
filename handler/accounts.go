@@ -13,7 +13,7 @@ import (
 	"github.com/marimell09/stone-challenge/utils"
 )
 
-var account_id_key = "accountId"
+var account_id_key = "account_id"
 
 func accounts(router chi.Router) {
 	router.Get("/", getAllAccounts)

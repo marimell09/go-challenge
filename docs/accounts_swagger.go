@@ -33,7 +33,7 @@ type getAccountsResponseWrapper struct {
 	Body models.AccountList
 }
 
-// swagger:route GET /accounts/{accountId} account getAccount
+// swagger:route GET /accounts/{account_id} account getAccount
 // Get account by id.
 // responses:
 //   200: accountResponse
@@ -42,10 +42,10 @@ type getAccountsResponseWrapper struct {
 type getAccountParamsWrapper struct {
 	// Account id for search
 	// in:path
-	AccountId int `json:"accountId"`
+	Account_id int `json:"account_id"`
 }
 
-// swagger:route GET /accounts/{accountId}/balance account getAccountBalance
+// swagger:route GET /accounts/{account_id}/balance account getAccountBalance
 // Get account balance by id.
 // responses:
 //   200: getAccountBalanceResponse
