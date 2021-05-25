@@ -10,20 +10,19 @@ type Credentials struct {
 	// the cpf for login
 	//
 	// required: true
-	// example: 9999999999
+	// example: 99999999999
 	Cpf string `json:"cpf"`
 
 	// the secret for login
 	//
 	// requires: true
 	// example: senha
-
 	Secret string `json:"secret"`
 
 	// the account id related to the cpf
 	//
 	// read-only: true
-	// example: senha
+	// example: 1
 	Account_id string `json:"account_id"`
 }
 
