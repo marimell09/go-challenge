@@ -1,4 +1,4 @@
-# Stone Challenge
+# Go Challenge
 
 Aqui podemos encontrar a resolução do desafio, onde era necessário criar uma API de transferencia entre contas internas de um banco digital.
 
